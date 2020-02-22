@@ -96,5 +96,18 @@ def swap_v2(w3, coins, cerc20s, pool_token_2):
     return swap_raw(w3, coins, cerc20s, pool_token_2, 'stableswap-v2.vy')
 
 
+@pytest.fixture(scope='function')
+def migration(w3, swap_v1, swap_v2, cerc20s, pool_token_1, pool_token_2):
+    return deploy_contract(
+            w3, 'migration.vy', w3.eth.accounts[1],
+            swap_v1.address, pool_token_1.address,
+            swap_v2.address, pool_token_2.address,
+            [c.address for c in cerc20s],
+            replacements={
+                '___N_COINS___': str(N_COINS),
+                '___N_ZEROS___': '[' + ', '.join(['ZERO256'] * N_COINS) + ']',
+            })
+
+
 def approx(a, b, precision=1e-10):
     return 2 * abs(a - b) / (a + b) <= precision
