@@ -45,10 +45,15 @@ def migrate():
     balances: uint256[N_COINS] = ZEROS
     for i in range(N_COINS):
         balances[i] = ERC20(self.coins[i]).balanceOf(self)
-    min_mint_amount: uint256 = self.new.calc_token_amount(balances, True)
-    min_mint_amount = min_mint_amount * 999 / 1000
+        ERC20(self.coins[i]).approve(self.new, balances[i])
+
+    min_mint_amount: uint256 = 0
+    if self.new_token.totalSupply() > 0:
+        min_mint_amount = self.new.calc_token_amount(balances, True)
+        min_mint_amount = min_mint_amount * 999 / 1000
 
     self.new.add_liquidity(balances, min_mint_amount)
 
     new_mint_amount: uint256 = self.new_token.balanceOf(self)
-    self.new_token.transfer(msg.sender, new_mint_amount)
+    assert_modifiable(
+        self.new_token.transfer(msg.sender, new_mint_amount))
