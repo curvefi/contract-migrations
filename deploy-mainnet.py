@@ -22,11 +22,6 @@ C_COINS = [
         '0x39AA39c021dfbaE8faC545936693aC917d5E7563']
 GETH_PASSWORD = None
 
-HELP = """swap, token = deploy_swap(A, fee) to deploy swap contract from the list
-Try A=900, fee=0.0004
-====================================================="""
-
-
 w3 = Web3(provider)
 w3.eth.setGasPriceStrategy(fast_gas_price_strategy)
 
@@ -39,10 +34,9 @@ if POA:
 _ = w3.eth.accounts
 
 
-def deploy_swap(A, fee):
+def deploy():
     if GETH_PASSWORD:
         w3.geth.personal.unlockAccount(w3.eth.accounts[0], GETH_PASSWORD)
-    fee = int(fee * 10 ** 10)
     migration_contract = deploy_contract(
             w3, ['migration.vy'], DEPLOYER_ADDRESS,
             OLD_CONTRACT, OLD_TOKEN, NEW_CONTRACT, NEW_TOKEN, C_COINS,
@@ -63,5 +57,4 @@ def deploy_swap(A, fee):
 
 
 if __name__ == '__main__':
-    import IPython
-    IPython.embed(header=HELP)
+    deploy()
