@@ -55,5 +55,8 @@ def migrate():
     self.new.add_liquidity(balances, min_mint_amount)
 
     new_mint_amount: uint256 = self.new_token.balanceOf(self)
+
+    assert new_mint_amount > 99 * old_token_amount / 100, "High slippage alert"
+
     assert_modifiable(
         self.new_token.transfer(msg.sender, new_mint_amount))
